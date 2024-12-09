@@ -58,3 +58,15 @@ html, body {
 .social-icon:last-child {
     margin-right: 0; /* Remove margin from the last icon */
 }
+
+.navbar {
+    margin-top: 0px;
+}
+
+.nav-link {
+    color: #343a40; /* Dark text color */
+}
+
+.nav-link:hover {
+    color: #007bff; /* Blue color on hover */
+}

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import '../css/login.css';
+import  { API_URL } from '../config/constants';
 
 function Login() {
     const [email, setEmail] = useState('');
@@ -9,6 +11,10 @@ function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         ajaxLogin(email, password);
+    };
+
+    const navigateToSubscribe = () => {
+        navigate('/subscribe');
     };
 
     return (
@@ -39,7 +45,8 @@ function Login() {
                 </div>
                 <p className="alert alert-danger py-2" id="badPassword" hidden>Email ou mot de passe incorrect</p>
                 <a href="#" className="forgot-password py-2">Mot de passe oublié ?</a>
-                <button type="submit" className="btn btn-primary" onClick={handleSubmit}>Se connecter</button>
+                <a href="#" className="forgot-password py-2" onClick={navigateToSubscribe}>Créer un compte</a>
+                <button type="submit" className="btn-log btn-primary" onClick={handleSubmit}>Se connecter</button>
             </form>
         </div>
     );
@@ -47,12 +54,12 @@ function Login() {
 
 function ajaxLogin(email, password) {
     // Code to send the login request
-    fetch('https://cinephaliaapi-misty-sun-5560.fly.dev/api/login', {
+    fetch(API_URL + '/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({email, password})
     })
         .then(response => response.json())
         .then(data => handleJwtToken(data))
@@ -60,13 +67,13 @@ function ajaxLogin(email, password) {
 
 }
 
-function handleJwtToken(data)
-{
+function handleJwtToken(data) {
     localStorage.setItem('token', data.token);
+    alert("Vous êtes connecté");
 }
 
-function badPass()
-{
+function badPass() {
     document.getElementById("badPassword").removeAttribute("hidden");
 }
+
 export default Login;

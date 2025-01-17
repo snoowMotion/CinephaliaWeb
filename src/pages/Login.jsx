@@ -68,8 +68,10 @@ function ajaxLogin(email, password,navigate) {
 }
 
 function handleJwtToken(data, navigate) {
-    localStorage.setItem('token', data.token);
-    navigate("/")
+    const token = data.token;
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    localStorage.setItem('token', JSON.stringify(payload));
+    navigate("/");
 }
 
 function badPass() {

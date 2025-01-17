@@ -7,6 +7,7 @@ import Login from "./pages/Login";
 import Subscribe from "./pages/Subscribe";
 import Home from "./pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PrivateRoute from './Components/PrivateRoute';
 function App() {
   return(
       <Router>
@@ -16,7 +17,11 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/subscribe" element={<Subscribe />} />
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={
+                    <PrivateRoute roles={['ROLE_USER']}>
+                        <Home />
+                    </PrivateRoute>
+                } />
               {/* Add other routes here */}
             </Routes>
           </div>

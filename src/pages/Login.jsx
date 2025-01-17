@@ -10,7 +10,7 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        ajaxLogin(email, password);
+        ajaxLogin(email, password, navigate);
     };
 
     const navigateToSubscribe = () => {
@@ -52,7 +52,7 @@ function Login() {
     );
 }
 
-function ajaxLogin(email, password) {
+function ajaxLogin(email, password,navigate) {
     // Code to send the login request
     fetch(API_URL + '/login', {
         method: 'POST',
@@ -62,14 +62,14 @@ function ajaxLogin(email, password) {
         body: JSON.stringify({email, password})
     })
         .then(response => response.json())
-        .then(data => handleJwtToken(data))
+        .then(data => handleJwtToken(data, navigate))
         .catch(error => badPass());
 
 }
 
-function handleJwtToken(data) {
+function handleJwtToken(data, navigate) {
     localStorage.setItem('token', data.token);
-    alert("Vous êtes connecté");
+    navigate("/")
 }
 
 function badPass() {

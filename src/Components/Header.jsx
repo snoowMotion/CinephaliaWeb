@@ -7,6 +7,16 @@ function Header() {
   const handleLoginClick = () => {
     navigate("/login");
   }
+  const handleLogoutClick = () => {
+    localStorage.removeItem('token');
+    navigate("/login");
+  }
+  // si l'utilisateur est connecté, on affiche le bouton de déconnexion
+  let buttonConnectOrDisconnect = <button type="button" id="connectButton" className="btn btn-success" onClick={handleLoginClick}>Connexion</button>;
+    // sinon on affiche le bouton de connexion
+    if (localStorage.getItem('token')) {
+      buttonConnectOrDisconnect = <button type="button" id="disconnectButton" className="btn btn-danger" onClick={handleLogoutClick}>Déconnexion</button>;
+    }
   return (
     <>
       <div className="row header">
@@ -14,7 +24,7 @@ function Header() {
           <img src="/images/logo.png" alt="Logo du site" className="logo" />
         </div>
         <div className="col-11 d-flex align-items-center justify-content-end gx-5">
-          <button type="button" id="connectButton" className="btn btn-success" onClick={handleLoginClick}>Connexion</button>
+            {buttonConnectOrDisconnect}
         </div>
       </div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">

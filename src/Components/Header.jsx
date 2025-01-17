@@ -1,5 +1,12 @@
+import React from "react";
+import {useNavigate} from "react-router-dom";
 
 function Header() {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate("/login");
+  }
   return (
     <>
       <div className="row header">
@@ -7,7 +14,7 @@ function Header() {
           <img src="/images/logo.png" alt="Logo du site" className="logo" />
         </div>
         <div className="col-11 d-flex align-items-center justify-content-end gx-5">
-          <button type="button" id="connectButton" className="btn btn-success">Connexion</button>
+          <button type="button" id="connectButton" className="btn btn-success" onClick={handleLoginClick}>Connexion</button>
         </div>
       </div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">

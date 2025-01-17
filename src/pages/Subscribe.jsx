@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/login.css';
 import { API_URL } from '../config/constants';
+
 function Subscribe() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -12,8 +13,13 @@ function Subscribe() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        ajaxSubscribe(email, password, nom, prenom);
+        if (password !== confirm) {
+            document.getElementById("badPassword").removeAttribute("hidden");
+            return;
+        }
+        ajaxSubscribe(email, password, nom, prenom, navigate);
     };
+
     return (
         <div className="login-container">
             <h2>Inscription</h2>
@@ -74,25 +80,32 @@ function Subscribe() {
                     />
                 </div>
                 <p className="alert alert-danger py-2" id="badPassword" hidden>Les mots de passe ne correspondent pas</p>
-                <button type="submit" className="btn-log btn-primary" onClick={handleSubmit}>S'inscrire</button>
+                <button type="submit" className="btn-log btn-primary">S'inscrire</button>
             </form>
         </div>
-    )
-
+    );
 }
 
-function ajaxSubscribe(email, password, nom, prenom) {
-    // Code to send the login request
-    fetch(API_URL + '/user', {
+function ajaxSubscribe(email, password, nom, prenom, navigate) {
+    fetch(API_URL + '/users', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/ld+json'
         },
         body: JSON.stringify({ email, password, nom, prenom })
     })
         .then(response => response.json())
-        .then(alert("création de compte réussie"))
-        .catch(alert("erreur lors de la création de compte"));
-
+        .then(data => handleAfterSubscribe(data, navigate))
+        .catch(() => alert("Erreur lors de la création de compte"));
 }
+
+function handleAfterSubscribe(data, navigate) {
+    if (data.id) {
+        alert("Compte créé avec succès, veuillez vous connecter");
+        navigate('/login');
+    } else {
+        alert("Erreur lors de la création de compte");
+    }
+}
+
 export default Subscribe;

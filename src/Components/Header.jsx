@@ -45,6 +45,24 @@ function Header() {
             <li className="nav-item">
               <a className="nav-link" href="#">Contact</a>
             </li>
+            <li className="nav-item">
+              <button className="nav-link btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#employeeMenu" aria-expanded="false" aria-controls="employeeMenu">
+                Employé
+              </button>
+              <div className="collapse" id="employeeMenu">
+                <ul className="navbar-nav">
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">Films</a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">Cinéma</a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="#">Séances</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
           </ul>
         </div>
       </nav>

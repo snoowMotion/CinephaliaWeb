@@ -31,7 +31,7 @@ function Header() {
         <div className="container-fluid justify-content-center">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a className="nav-link" href="#">Accueil</a>
+              <a className="nav-link" href="/">Accueil</a>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="#">Réservation</a>

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/filmNew.css'; // Assuming you have a custom CSS file for additional styles
-import  { API_URL } from '../../config/constants';
+import { API_URL } from '../../config/constants';
 
 function FilmNew() {
     const [title, setTitle] = useState('');
-    const [genre, setGenre] = useState([]);
+    const [genre, setGenres] = useState([]); // Liste des genres
+    const [selectedGenre, setSelectedGenre] = useState(''); // Genre sélectionné
     const [description, setDescription] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
+    const [imageFile, setImageFile] = useState(null); // Fichier pour l'affiche
     const [ageMini, setAgeMini] = useState('');
     const [label, setLabel] = useState(false);
 
     useEffect(() => {
         fetchGenres();
-    },[]);
+    }, []);
 
     const fetchGenres = () => {
         fetch(API_URL + '/genres', {
@@ -24,16 +25,47 @@ function FilmNew() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log(data.member);
-                setGenre(data.member);
+                setGenres(data.member || []); // Assurez-vous que `data.member` est un tableau
+            })
+            .catch(error => {
+                console.error('Error fetching genres:', error);
+            });
+    };
+    const handleFileChange = (e) => {
+        setImageFile(e.target.files[0]); // Stocker le fichier sélectionné
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        // Créer un FormData pour envoyer les données
+        const formData = new FormData();
+        formData.append('titre', title);
+        formData.append('genre', selectedGenre);
+        formData.append('synopsis', description);
+        if (imageFile) {
+            formData.append('afficheUrl', imageFile); // Ajouter le fichier
+        }
+        formData.append('age_mini', ageMini);
+        formData.append('label', label);
+
+
+        // Envoyer les données via fetch
+        fetch(API_URL + '/films', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}` // Pas de 'Content-Type', car FormData le définit automatiquement
+            },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Film ajouté:', data);
+                // Réinitialiser le formulaire ou rediriger l'utilisateur
             })
             .catch(error => {
                 console.error('Error:', error);
             });
-    }
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission
     };
 
     return (
@@ -62,12 +94,15 @@ function FilmNew() {
                             <select
                                 className="form-select"
                                 id="genre"
-                                onChange={(e) => setGenre(e.target.value)}
+                                value={selectedGenre}
+                                onChange={(e) => setSelectedGenre(e.target.value)} // Stocke l'id sélectionné
                                 required
                             >
                                 <option value="">Choisir un genre</option>
-                                {genre.map((g, index) => (
-                                    <option key={index} value={g.id}>{g.libelle}</option>
+                                {genre.map((g) => (
+                                    <option key={g.id} value={g.id}>
+                                        {g.libelle}
+                                    </option>
                                 ))}
                             </select>
                         </div>
@@ -83,13 +118,12 @@ function FilmNew() {
                             ></textarea>
                         </div>
                         <div className="mb-3">
-                            <label htmlFor="imageUrl" className="form-label">URL de l'image</label>
+                            <label htmlFor="imageFile" className="form-label">Affiche du film</label>
                             <input
-                                type="text"
+                                type="file"
                                 className="form-control"
-                                id="imageUrl"
-                                value={imageUrl}
-                                onChange={(e) => setImageUrl(e.target.value)}
+                                id="imageFile"
+                                onChange={handleFileChange} // Gestion du fichier
                                 required
                             />
                         </div>
@@ -121,6 +155,5 @@ function FilmNew() {
         </div>
     );
 }
-
 
 export default FilmNew;

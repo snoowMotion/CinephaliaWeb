@@ -8,7 +8,8 @@ import Subscribe from "./pages/Subscribe";
 import Home from "./pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from './Components/PrivateRoute';
-import FilmList from './pages/FilmList';
+import FilmList from './pages/Film/FilmList';
+import FilmNew from './pages/Film/FilmNew';
 function App() {
   return(
       <Router>
@@ -23,9 +24,14 @@ function App() {
                         <Home />
                     </PrivateRoute>
                 } />
-                <Route path="/admin/films" element={
+                <Route path="/admin/films/list" element={
                     <PrivateRoute roles={['ROLE_ADMIN']}>
                         <FilmList />
+                    </PrivateRoute>
+                } />
+                <Route path="/admin/films/new" element={
+                    <PrivateRoute roles={['ROLE_ADMIN']}>
+                        <FilmNew />
                     </PrivateRoute>
                 } />
               {/* Add other routes here */}

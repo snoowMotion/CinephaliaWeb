@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/filmNew.css'; // Assuming you have a custom CSS file for additional styles
 import { API_URL } from '../../config/constants';
+import {useNavigate} from "react-router-dom";
 
 function FilmNew() {
     const [title, setTitle] = useState('');
@@ -10,6 +11,7 @@ function FilmNew() {
     const [imageFile, setImageFile] = useState(null); // Fichier pour l'affiche
     const [ageMini, setAgeMini] = useState('');
     const [label, setLabel] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchGenres();
@@ -60,7 +62,9 @@ function FilmNew() {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Film ajouté:', data);
+                // On affiche une alerte ou on redirige l'utilisateur
+                alert('Film ajouté avec succès !');
+                navigate('/');
                 // Réinitialiser le formulaire ou rediriger l'utilisateur
             })
             .catch(error => {

@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from './Components/PrivateRoute';
 import FilmList from './pages/Film/FilmList';
 import FilmNew from './pages/Film/FilmNew';
+import FilmEdit from './pages/Film/FilmEdit';
 function App() {
   return(
       <Router>
@@ -32,6 +33,11 @@ function App() {
                 <Route path="/admin/films/new" element={
                     <PrivateRoute roles={['ROLE_ADMIN']}>
                         <FilmNew />
+                    </PrivateRoute>
+                } />
+                <Route path="/admin/films/edit/:id" element={
+                    <PrivateRoute roles={['ROLE_ADMIN']}>
+                        <FilmEdit />
                     </PrivateRoute>
                 } />
               {/* Add other routes here */}

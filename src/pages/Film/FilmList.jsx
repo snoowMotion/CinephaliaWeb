@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-//import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../../css/login.css';
-import { faker } from '@faker-js/faker';
 import { API_URL } from '../../config/constants';
 
 function FilmList()
 {
     const [movies, setMovies] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() =>{
         // Fonction pour récupérer les films
@@ -28,13 +28,16 @@ function FilmList()
 
         fetchMovies();
     }, []); // Le tableau vide signifie que l'effet se déclenche une seule fois après le montage
+    const redirectToNewFilm = () => {
+        navigate('/admin/films/new');
+    }
 
 
     return (
         <div className="container">
             <div className="row">
                 <div className="col-12 d-flex justify-content-end">
-                    <button className="btn btn-primary">Ajouter un film</button>
+                    <button className="btn btn-primary" id="AddFilm" onClick={redirectToNewFilm}>Ajouter un film</button>
                 </div>
             </div>
             <div className="row py-4">
@@ -57,7 +60,7 @@ function FilmList()
                                     <td>{movie.ageMini}</td>
                                     <td>{movie.label ? "Oui" : "Non"}</td>
                                     <td>
-                                        <button className="btn btn-primary">Modifier</button>
+                                        <button className="btn btn-primary" onClick={() => navigate(`/admin/films/edit/${movie.id}`)}>Modifier</button>
                                         <button className="btn btn-danger ms-2">Supprimer</button>
                                     </td>
                                 </tr>

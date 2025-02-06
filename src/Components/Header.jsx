@@ -52,7 +52,7 @@ function Header() {
               <div className="collapse" id="employeeMenu">
                 <ul className="navbar-nav">
                   <li className="nav-item">
-                    <a className="nav-link" href="#">Films</a>
+                    <a className="nav-link" href="/admin/films/list">Films</a>
                   </li>
                   <li className="nav-item">
                     <a className="nav-link" href="#">Cinéma</a>

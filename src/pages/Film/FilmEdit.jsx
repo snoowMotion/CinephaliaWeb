@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import '../../css/filmNew.css'; // Assuming you have a custom CSS file for additional styles
-import { API_URL } from '../../config/constants';
-import {useNavigate, useParams} from "react-router-dom";
+import { API_URL, UPLOADS_URL } from '../../config/constants';
+import { useNavigate, useParams } from "react-router-dom";
 
 function FilmEdit() {
     const [title, setTitle] = useState('');
-    const [genre, setGenres] = useState([]); // Liste des genres
+    const [genres, setGenres] = useState([]); // Liste des genres
     const [selectedGenre, setSelectedGenre] = useState(''); // Genre sélectionné
     const [description, setDescription] = useState('');
     const [imageFile, setImageFile] = useState(null); // Fichier pour l'affiche
     const [ageMini, setAgeMini] = useState('');
     const [label, setLabel] = useState(false);
     const navigate = useNavigate();
-    const {id} = useParams();
+    const { id } = useParams();
+
     useEffect(() => {
         fetchGenres();
         fetchFilm();
     }, []);
 
     const fetchGenres = () => {
-        fetch(API_URL + '/genres', {
+        fetch(`${API_URL}/genres`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,24 +35,29 @@ function FilmEdit() {
                 console.error('Error fetching genres:', error);
             });
     };
+
     const fetchFilm = () => {
-        fetch(API_URL + '/films/' + id, {
+        fetch(`${API_URL}/films/${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('jwt')}`
-    }}).then(response => response.json())
-        .then(data => {
-            setTitle(data.titre);
-            setSelectedGenre(data.genre.id);
-            setDescription(data.synopsis);
-            setAgeMini(data.ageMini);
-            setLabel(data.label);
+            }
         })
-        .catch(error => {
-            console.error('Error fetching film:', error);
-        });
+            .then(response => response.json())
+            .then(data => {
+                setTitle(data.titre);
+                setSelectedGenre(data.genre.id);
+                setDescription(data.synopsis);
+                setAgeMini(data.ageMini);
+                setLabel(data.label);
+                setImageFile(`${UPLOADS_URL}${data.afficheUrl}`);
+            })
+            .catch(error => {
+                console.error('Error fetching film:', error);
+            });
     };
+
     const handleFileChange = (e) => {
         setImageFile(e.target.files[0]); // Stocker le fichier sélectionné
     };
@@ -59,32 +65,52 @@ function FilmEdit() {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Créer un FormData pour envoyer les données
-        const formData = new FormData();
-        formData.append('titre', title);
-        formData.append('genre', selectedGenre);
-        formData.append('synopsis', description);
-        if (imageFile) {
-            formData.append('afficheUrl', imageFile); // Ajouter le fichier
-        }
-        formData.append('age_mini', ageMini);
-        formData.append('label', label);
-
+        // Créer un objet pour envoyer les données
+        const filmData = {
+            titre: title,
+            genre: "api/genres/"  + selectedGenre,
+            synopsis: description,
+            age_mini: ageMini,
+            label: label,
+            afficheUrl: imageFile ? imageFile.name : '' // Envoyer seulement le nom du fichier
+        };
 
         // Envoyer les données via fetch
-        fetch(API_URL + '/films', {
-            method: 'POST',
+        fetch(`${API_URL}/films/${id}`, {
+            method: 'PUT',
+
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}` // Pas de 'Content-Type', car FormData le définit automatiquement
+                'Content-Type': 'application/ld+json',
+                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
             },
-            body: formData
+            body: JSON.stringify(filmData)
         })
             .then(response => response.json())
             .then(data => {
-                // On affiche une alerte ou on redirige l'utilisateur
-                alert('Film ajouté avec succès !');
-                navigate('/');
-                // Réinitialiser le formulaire ou rediriger l'utilisateur
+                if (imageFile) {
+                    // Si le fichier est présent, envoyer le fichier via une autre requête AJAX
+                    const formData = new FormData();
+                    formData.append('file', imageFile);
+
+                    fetch(`${API_URL}/upload`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                        },
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(uploadData => {
+                            alert('Film modifié avec succès et fichier uploadé !');
+                            navigate('/');
+                        })
+                        .catch(error => {
+                            console.error('Error uploading file:', error);
+                        });
+                } else {
+                    alert('Film modifié avec succès !');
+                    navigate('/');
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -95,7 +121,7 @@ function FilmEdit() {
         <div className="container">
             <div className="row">
                 <div className="col-12">
-                    <h1>Ajouter un film</h1>
+                    <h1>Modifier un film</h1>
                 </div>
             </div>
             <div className="row">
@@ -122,7 +148,7 @@ function FilmEdit() {
                                 required
                             >
                                 <option value="">Choisir un genre</option>
-                                {genre.map((g) => (
+                                {genres.map((g) => (
                                     <option key={g.id} value={g.id}>
                                         {g.libelle}
                                     </option>
@@ -147,8 +173,14 @@ function FilmEdit() {
                                 className="form-control"
                                 id="imageFile"
                                 onChange={handleFileChange} // Gestion du fichier
-                                required
                             />
+                        </div>
+                        <div className="mb-3">
+                            {imageFile && (typeof imageFile === 'string' ? (
+                                <img src={imageFile} alt="Affiche du film" className="img-fluid" style={{ width: '200px', height: '200px' }} />
+                            ) : (
+                                <img src={URL.createObjectURL(imageFile)} alt="Affiche du film" className="img-fluid" style={{ width: '200px', height: '200px' }} />
+                            ))}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="ageMini" className="form-label">Age minimum</label>
@@ -171,7 +203,7 @@ function FilmEdit() {
                             />
                             <label className="form-check-label" htmlFor="label">Label</label>
                         </div>
-                        <button type="submit" className="btn btn-primary">Ajouter</button>
+                        <button type="submit" className="btn btn-primary">Modifier</button>
                     </form>
                 </div>
             </div>
